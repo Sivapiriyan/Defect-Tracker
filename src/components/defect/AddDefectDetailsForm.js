@@ -1,6 +1,8 @@
 import React, { Component } from 'react'
 import { Drawer, Form, Col, Row, Select, Tag, Input, Button, Typography } from "antd";
 import { PlusCircleOutlined, ClearOutlined } from '@ant-design/icons';
+import { connect } from 'react-redux';
+import { adddefect,closeDefectAddDrawerForm} from '../redux/action/ActionDefect';
 const { Option } = Select;
 const { TextArea } = Input;
 const { Text } = Typography;
@@ -116,7 +118,7 @@ export class AddDefectDetailsForm extends Component {
                 availableIn: this.state.availableIn
             }
         })
-        this.props.adddefect(this.state.defects)               
+        this.props.adddefect(this.state.defects)          
         
         this.formRef.current.resetFields();        
         // window.location.reload();        
@@ -128,23 +130,16 @@ export class AddDefectDetailsForm extends Component {
                 <Drawer
                     title="Add Defct Details"
                     width={720}
-                    onClose={this.onClose}
-                    visible={this.state.show}
+                    onClose={this.props.closeDefectAddDrawerForm}
+                    visible={this.props.defectAddFormShowValue}
                     placement='left'
 
                 >
                     <Form layout="vertical" hideRequiredMark ref={this.formRef} name="add-defect" onFinish={this.handleSubmit}>
                         <Row gutter={16}>
-
                             <Col span={12}>
                                 <Form.Item>
-                                    <Text mark style={{ fontSize: 15, color: "black" }}>Defect ID : </Text>
-                                    <Text mark name="defectId" style={{ fontSize: 15, color: "black" }}>{this.props.data.length+1}</Text>
-                                </Form.Item>
-                            </Col>
-                            <Col span={12}>
-                                <Form.Item>
-                                    <Text mark style={{ fontSize: 15, color: "black", marginLeft: 210 }}>Status : </Text>
+                                    <Text mark style={{ fontSize: 15, color: "black" }}>Status : </Text>
                                     <Text mark name="status" style={{ fontSize: 15, color: "black" }}>NEW</Text>
                                 </Form.Item>
                             </Col>
@@ -358,5 +353,16 @@ export class AddDefectDetailsForm extends Component {
         )
     }
 }
+const mapStateToProps = state => ({
+    defect: state.ReducerDefect.defect,
+    defectAddFormShowValue:state.ReducerDefect.defectAddFormShowValue
+  });
+  
+  const mapDispatchToProps = (dispatch, ownProps) => {
+    return {     
+        adddefect: (defect) => { dispatch(adddefect(defect)) },
+        closeDefectAddDrawerForm:()=>{dispatch(closeDefectAddDrawerForm())}
+    }
+  }
 
-export default AddDefectDetailsForm
+export default connect(mapStateToProps, mapDispatchToProps)(AddDefectDetailsForm)

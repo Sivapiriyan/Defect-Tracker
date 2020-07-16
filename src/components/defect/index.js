@@ -1,65 +1,60 @@
 import React, { Component } from 'react'
-import {Button, Col, Row, Statistic } from "antd";
+import { Button, Col, Row, Statistic } from "antd";
 import { connect } from 'react-redux';
-import { message } from 'antd';
-import { adddefect } from '../redux/action/ActionDefect';
+import { viewDefectAddDrawerForm } from '../redux/action/ActionDefect';
 import ViewDefect from './ViewDefectDetails'
 import AddDefect from './AddDefectDetailsForm'
-import {   
-    FallOutlined,
-    RiseOutlined,
-    StockOutlined,
-    BugOutlined, 
-    RadarChartOutlined,
-  } from "@ant-design/icons";
+import UpdateDefect from './UpdateDefectDetailsForm'
+import {
+  FallOutlined,
+  RiseOutlined,
+  StockOutlined,
+  BugOutlined,
+  RadarChartOutlined,
+} from "@ant-design/icons";
 
 export class defect extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {     
-          show:false,
-          low:'',
-          high:'',
-          medium:'',
-          newdef:'',
-          data:''
+  state = {
+    totalDefects: '',
+    high: '',
+    medium: '',
+    low: '',
+    newdef: ''
 
-        };
-      } 
 
-    componentWillReceiveProps(nextProps) {
-        if (nextProps.msg) {
-            message.loading('Action in progress..')
-                .then(() => message.success(nextProps.msg))
-                .then(() => {
-                    this.setState({
-                        show: false
-                    })
-                })
-                .then(() => {
-                    window.location.reload()
-                })
-        }        
+  };
+  componentDidMount() {
+    for (let i = 0; i < this.props.defect.length; i++) {
+      switch (this.props.defect[i].severity) {
+        case "High":
+          this.setState({
+            high: this.state.high + 1,
+          });
+          break;
+        case "Medium":
+          this.setState({
+            medium: this.state.medium + 1,
+          });
+          break;
+        case "Low":
+          this.setState({
+            low: this.state.low + 1,
+          });
+          break;
+      }
+      switch (this.props.defect[i].status) {
+        case "New":
+          this.setState({
+            newdef: this.state.newdef + 1,
+          });
+          break;
+      }
     }
-
-    showDrawerDefectform = () => {
-        this.setState({
-          show: true,
-        });
-      };
-      getdata = (childData) => {
-        this.setState({
-            low: childData.low,
-            high:childData.high,
-            medium:childData.medium,
-            newdef:childData.newdef,
-            data:childData.data
-        })
-     }
-    render() {
-        return (
-            <div>
-                <Row gutter={8}>
+  }
+  render() {
+    return (
+      <div>
+        <Row gutter={8}>
           <Col span={3}>
             <Button
               type="primary"
@@ -68,7 +63,7 @@ export class defect extends Component {
                 marginBottom: 16,
                 marginTop: 10,
               }}
-              onClick={this.showDrawerDefectform}
+              onClick={this.props.viewDefectAddDrawerForm}
             >
               Add New Defect
             </Button>
@@ -125,28 +120,27 @@ export class defect extends Component {
             <Statistic
               title="Total Defects"
               style={{ textAlign: "center" }}
-              value={this.state.data.length}
+              value={this.props.defect.length}
               valueStyle={{ color: "magenta", textAlign: "center" }}
               prefix={<BugOutlined />}
             ></Statistic>
           </Col>
         </Row>
-        <ViewDefect getdata={this.getdata}/>
-        <AddDefect show={this.state.show} adddefect={this.props.adddefect} data={this.state.data}/>
-            </div>
-        )
-    }
+        <ViewDefect />
+        <AddDefect />
+        <UpdateDefect/>
+      </div>
+    )
+  }
 }
 const mapStateToProps = state => ({
-    defect: state.ReducerDefect.defect,
-    msg: state.ReducerDefect.msg
+  defect: state.ReducerDefect.defect
 });
 
 const mapDispatchToProps = (dispatch, ownProps) => {
-    return {
-        adddefect: (defect) => { dispatch(adddefect(defect)) },
-
-    }
+  return {
+    viewDefectAddDrawerForm: () => { dispatch(viewDefectAddDrawerForm()) }
+  }
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(defect)

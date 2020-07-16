@@ -1,10 +1,12 @@
 import React, { Component } from 'react'
-import { Drawer, Form, Col, Row, Select,Input, Button,DatePicker,message} from "antd";
-import { PlusCircleOutlined, ClearOutlined} from '@ant-design/icons';
-import { addemployee, closeAddDrawerForm} from '../../components/redux/action/ActionEmployee';
+import { Drawer, Form, Col, Row, Select, Input, Button, DatePicker, message,Typography} from "antd";
 import { connect } from 'react-redux';
+import { PlusCircleOutlined, ClearOutlined } from '@ant-design/icons';
+import { closeUpdateDrawerForm, updateemployee} from '../../components/redux/action/ActionEmployee';
+const dateFormatList = ['DD/MM/YYYY', 'DD/MM/YY'];
 const { Option } = Select;
 const { TextArea } = Input;
+const { Text } = Typography
 const validateMessages = {
     required: '${label} is required!',
     types: {
@@ -15,10 +17,11 @@ const validateMessages = {
         range: '${label} must be between ${min} and ${max}',
     },
 };
-export class AddEmployeeForm extends Component {
-    formRef = React.createRef();
+
+export class UpdateEmployeeForm extends Component {
     state = {
         id: '',
+        employeeId:'',
         firstName: '',
         lastName: '',
         DOB: '',
@@ -27,41 +30,43 @@ export class AddEmployeeForm extends Component {
         email: '',
         number: '',
         department: '',
-        employee: '',
         position: ''
     }
-    // componentWillReceiveProps(nextProps){
-    //     console.log(nextProps.addMsg)
-    //     if(nextProps.addMsg==='add'){
-    //         this.formRef.current.resetFields()
-    //         message.success('Add Successfully')
-    //                 .then(() => {
-    //                     window.location.reload();
-    //                 })
-    //             this.props.closeAddDrawerForm()                
-    //     } 
-    //     else if(nextProps.addMsg==='err'){
-    //         message.error('Error to Add')
-    //     }     
-    // }
-    // messageShow = (type) => {
-    //     notification[type]({
-    //       message: 'Notification Title',
-    //       description:
-    //         'This is the content of the notification. This is the content of the notification. This is the content of the notification.',
-    //     });
-    //   }
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.updateEmployeeData) {
+            this.setState({
+                id: nextProps.updateEmployeeData._id,
+                employeeId:nextProps.updateEmployeeData.employeeId,
+                firstName: nextProps.updateEmployeeData.employeeFirstName,
+                lastName: nextProps.updateEmployeeData.employeeLastName,
+                DOB: nextProps.updateEmployeeData.employeeDOB,
+                NIC: nextProps.updateEmployeeData.employeeNIC,
+                address: nextProps.updateEmployeeData.employeeAddress,
+                email: nextProps.updateEmployeeData.employeeEmail,
+                number: nextProps.updateEmployeeData.employeeMobileNumber,
+                department: nextProps.updateEmployeeData.employeeDepartment,
+                position: nextProps.updateEmployeeData.employeePosition,
+            })
+        }
 
+    }
 
     handleChange = (event) => {
         this.setState({
             [event.target.name]: event.target.value,
-
         });
+    };
+    handledepartmentChange = value => {
+        this.setState({ department: value });
+    };
+    handlepositionChange = value => {
+        this.setState({ position: value });
+    };
+    onDateChange = (date, dateString) => {
+        this.setState({ DOB: dateString })
     }
-    onFinish = (event) => {
-        const employee = {
-            employeeId: this.props.employees.length + 1,
+    onUpdate = () => {
+        const employeeUpdateData = {
             employeeFirstName: this.state.firstName,
             employeeLastName: this.state.lastName,
             employeeDOB: this.state.DOB,
@@ -72,72 +77,69 @@ export class AddEmployeeForm extends Component {
             employeeDepartment: this.state.department,
             employeePosition: this.state.position
         }
-        this.props.addemployee(employee);
-        this.formRef.current.resetFields();
-        this.props.closeAddDrawerForm(); 
-        message.success("Add New Employee Successfully")
+        this.props.updateemployee(this.state.id, employeeUpdateData)
+        this.props.closeUpdateDrawerForm()
+        message.success("Update Employee Successfully")
             .then(() => {
                 window.location.reload();
-            })   
-          
-                
+            })
     }
-    handledepartmentChange = value => {
-        this.setState({ department: value });
-    };
-    handlepositionChange = value => {
-        this.setState({ position: value });
-    };
-    onChange = (date, dateString) => {
-        this.setState({ DOB: dateString })
-    }
+
     render() {
         return (
             <div>
                 <Drawer
-                    title="Add New Employee"
+                    title="Update Employee Details"
                     width={720}
-                    onClose={this.props.closeAddDrawerForm}
-                    visible={this.props.showValueAddForm}
-                    placement='left'
+                    onClose={this.props.closeUpdateDrawerForm}
+                    visible={this.props.showValueUpdateForm}
 
                 >
-                    <Form layout="vertical" hideRequiredMark name="nest-messages" ref={this.formRef} onFinish={this.onFinish} validateMessages={validateMessages}>
+                    <Form layout="vertical" hideRequiredMark name="nest-messages" onFinish={this.onUpdate} validateMessages={validateMessages}>
                         <Row gutter={16}>
                             <Col span={12}>
-                                <Form.Item
-                                    name="FirstName"
-                                    label="First Name"
-                                    onChange={this.handleChange}
-                                    rules={[
-                                        {
-                                            required: true,
-                                        },
-                                    ]}
-
-                                >
-                                    <Input name="firstName" placeholder="First Name" />
-                                </Form.Item>
-                            </Col>
-                            <Col span={12}>
-                                <Form.Item
-                                    name="LastName"
-                                    label="Last Name"
-                                    onChange={this.handleChange}
-                                    rules={[
-                                        {
-                                            required: true,
-                                        },
-                                    ]}
-                                >
-                                    <Input name="lastName" placeholder="Last Name" />
+                            <Form.Item>
+                                    <Text mark style={{ float: "left", fontSize: "16px" }}>
+                                        Employee ID: {this.state.employeeId}
+                                </Text>
                                 </Form.Item>
                             </Col>
                         </Row>
                         <Row gutter={16}>
                             <Col span={12}>
                                 <Form.Item
-                                    name="dob"
+                                    label="First Name"
+                                    rules={[
+                                        {
+                                            required: true,
+                                        },
+                                    ]}
+                                >
+                                    <Input
+                                        name="firstName"
+                                        value={this.state.firstName}
+                                        onChange={(event) => this.handleChange(event)}
+                                    />
+                                </Form.Item>
+                            </Col>
+                            <Col span={12}>
+                                <Form.Item
+                                    label="Last Name"
+                                    rules={[
+                                        {
+                                            required: true,
+                                        },
+                                    ]}
+                                >
+                                    <Input name="lastName"
+                                        value={this.state.lastName}
+                                        onChange={(event) => this.handleChange(event)} />
+                                </Form.Item>
+                            </Col>
+                        </Row>
+                        <Row gutter={16}>
+                            <Col span={12}>
+                                <Form.Item
                                     label="Date of Birth"
                                     rules={[
                                         {
@@ -145,30 +147,28 @@ export class AddEmployeeForm extends Component {
                                         },
                                     ]}
                                 >
-                                    <DatePicker name="DOB" style={{ width: 323 }} onChange={this.onChange} />
+                                    <DatePicker placeholder={this.state.DOB} name="DOB" style={{ width: 320 }} format={dateFormatList} onChange={this.onDateChange} />
 
                                 </Form.Item>
                             </Col>
                             <Col span={12}>
                                 <Form.Item
-                                    name="nic"
                                     label="NIC Number"
-                                    onChange={this.handleChange}
                                     rules={[
                                         {
                                             required: true,
                                         },
                                     ]}
                                 >
-                                    <Input name="NIC" placeholder="NIC Number" />
+                                    <Input name="NIC"
+                                        value={this.state.NIC}
+                                        onChange={(event) => this.handleChange(event)} />
                                 </Form.Item>
                             </Col>
                         </Row>
                         <Row gutter={16}>
                             <Col span={12}>
                                 <Form.Item
-                                    name="Email"
-                                    onChange={this.handleChange}
                                     label="Email"
                                     rules={[
                                         {
@@ -176,13 +176,13 @@ export class AddEmployeeForm extends Component {
                                         },
                                     ]}
                                 >
-                                    <Input name="email" placeholder="Email" />
+                                    <Input name="email"
+                                        value={this.state.email}
+                                        onChange={(event) => this.handleChange(event)} />
                                 </Form.Item>
                             </Col>
                             <Col span={12}>
                                 <Form.Item
-                                    name="mobileNumber"
-                                    onChange={this.handleChange}
                                     label="Mobile Number"
                                     rules={[
                                         {
@@ -190,15 +190,16 @@ export class AddEmployeeForm extends Component {
                                         },
                                     ]}
                                 >
-                                    <Input name="number" placeholder="Mobile Number" />
+                                    <Input name="number"
+                                        type="number"
+                                        value={this.state.number}
+                                        onChange={(event) => this.handleChange(event)} />
                                 </Form.Item>
                             </Col>
                         </Row>
                         <Row gutter={16}>
                             <Col span={24}>
                                 <Form.Item
-                                    name="Address"
-                                    onChange={this.handleChange}
                                     label="Address"
                                     rules={[
                                         {
@@ -210,6 +211,8 @@ export class AddEmployeeForm extends Component {
                                         placeholder="Address......."
                                         autoSize={{ minRows: 3, maxRows: 5 }}
                                         name="address"
+                                        value={this.state.address}
+                                        onChange={(event) => this.handleChange(event)}
                                     />
                                 </Form.Item>
                             </Col>
@@ -217,8 +220,6 @@ export class AddEmployeeForm extends Component {
                         <Row gutter={16}>
                             <Col span={12}>
                                 <Form.Item
-                                    name="Department"
-                                    onChange={this.handleChange}
                                     label="Department"
                                     rules={[
                                         {
@@ -226,7 +227,7 @@ export class AddEmployeeForm extends Component {
                                         },
                                     ]}
                                 >
-                                    <Select value={this.state.department} defaultValue="Select Department" name="department" onChange={this.handledepartmentChange}>
+                                    <Select value={this.state.department} name="department" onChange={this.handledepartmentChange}>
                                         <Option value="Developer">Developer</Option>
                                         <Option value="QA">QA</Option>
                                     </Select>
@@ -234,8 +235,6 @@ export class AddEmployeeForm extends Component {
                             </Col>
                             <Col span={12}>
                                 <Form.Item
-                                    name="Position"
-                                    onChange={this.handleChange}
                                     label="Position"
                                     rules={[
                                         {
@@ -243,7 +242,7 @@ export class AddEmployeeForm extends Component {
                                         },
                                     ]}
                                 >
-                                    <Select value={this.state.position} defaultValue="Select Position" name="position" onChange={this.handlepositionChange}>
+                                    <Select value={this.state.position} name="position" onChange={this.handlepositionChange}>
                                         <Option value="Associate">Associate</Option>
                                         <Option value="Lead">Lead</Option>
                                     </Select>
@@ -259,29 +258,27 @@ export class AddEmployeeForm extends Component {
                                  </Button>
                                     &nbsp;
                                 <Button type="primary" htmlType="submit" style={{ width: 100 }}>
-                                        <PlusCircleOutlined />  Submit
+                                        <PlusCircleOutlined />  Update
                                  </Button>
                                 </Form.Item>
                             </Col>
                         </Row>
                     </Form>
-                </Drawer>               
+                </Drawer>
             </div>
         )
     }
 }
-
-const mapStateToProps = state => ({    
-    employees: state.ReducerEmployee.employees,
-    showValueAddForm: state.ReducerEmployee.AddEmployeeDrawerShow,
-    addMsg: state.ReducerEmployee.addMsg,
+const mapStateToProps = state => ({
+    updateMsg: state.ReducerEmployee.updateMsg,
+    showValueUpdateForm: state.ReducerEmployee.UpdateEmployeeDrawerShow,
+    updateEmployeeData: state.ReducerEmployee.updateEmployeeData
 });
-
 const mapDispatchToProps = (dispatch, ownProps) => {
     return {
-        addemployee: (employees) => { dispatch(addemployee(employees)) },
-        closeAddDrawerForm: () => { dispatch(closeAddDrawerForm()) },
+        closeUpdateDrawerForm: () => { dispatch(closeUpdateDrawerForm()) },
+        updateemployee: (id, employee) => { dispatch(updateemployee(id, employee)) }
     }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(AddEmployeeForm)
+export default connect(mapStateToProps, mapDispatchToProps)(UpdateEmployeeForm)

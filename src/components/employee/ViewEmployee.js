@@ -1,15 +1,10 @@
 import React, { Component, Fragment } from "react";
-import ReactDOM from "react-dom";
-import { Link } from "react-router-dom";
-import { Table, Input, Button, Space, Tag } from "antd";
+import { connect } from 'react-redux';
+import {viewUpdateDrawerForm,fetchemployee} from '../../components/redux/action/ActionEmployee';
+import { Table, Input, Button, Space, Tag,Spin } from "antd";
 import Highlighter from "react-highlight-words";
-import { SearchOutlined } from "@ant-design/icons";
+import { SearchOutlined,EditOutlined,FolderViewOutlined} from "@ant-design/icons";
 import "antd/dist/antd.css";
-import { Drawer, Form, Col, Row, Select, DatePicker } from "antd";
-import { PlusOutlined } from "@ant-design/icons";
-
-
-const { Option } = Select;
 
 export class ViewEmployee extends Component {   
 
@@ -18,11 +13,31 @@ export class ViewEmployee extends Component {
     this.state = { 
       searchText: "",
       searchedColumn: "",
-      visible: false,
-      data: [],
-      show:false
+      visible: false,      
+      show:false, 
+      sortedInfo:null,
+      filteredInfo:null,
+      loading:true,
+
+         
     };
   }  
+  componentWillMount() {
+    this.props.fetchemployee();
+  }
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.employees) {
+      this.setState({ loading:false});
+    }
+  }    
+  
+  filterHandleChange = (pagination, filters, sorter) => {
+    console.log("Various parameters", pagination, filters, sorter);
+    this.setState({
+      filteredInfo: filters,
+      sortedInfo: sorter,
+    });
+  };
   getColumnSearchProps = (dataIndex) => ({
     filterDropdown: ({
       setSelectedKeys,
@@ -35,7 +50,7 @@ export class ViewEmployee extends Component {
           ref={(node) => {
             this.searchInput = node;
           }}
-          placeholder={`Search ${dataIndex}`}
+          placeholder={`Search`}
           value={selectedKeys[0]}
           onChange={(e) =>
             setSelectedKeys(e.target.value ? [e.target.value] : [])
@@ -102,48 +117,119 @@ export class ViewEmployee extends Component {
   };
 
   render() {
+    let { sortedInfo, filteredInfo } = this.state;
+    sortedInfo = sortedInfo || {};
+    filteredInfo = filteredInfo || {};
     const columns = [
       {
-        title: "Employee ID",
+        title: "ID",
         dataIndex: "employeeId",
+        width: "1%",
         key: "employeeId",
-        ...this.getColumnSearchProps("Id"),
+        sorter: (a, b) => a.defectsId - b.defectsId,
+        defaultSortOrder: "descend",
+        sortDirections: ["descend", "ascend"],
       },
       {
-        title: "Employee Name",
-        dataIndex: "employeeName",
-        key: "employeeName",
-        ...this.getColumnSearchProps("Name"),
+        title: "First Name",
+        dataIndex: "employeeFirstName",
+        key: "employeeFirstName",
+        ...this.getColumnSearchProps("employeeFirstName"),
       },
+      {
+        title: "Last Name",
+        dataIndex: "employeeLastName",
+        key: "employeeLastName",
+        ...this.getColumnSearchProps("employeeLastName"),
+      },     
       {
         title: "Email",
         dataIndex: "employeeEmail",
         key: "employeeEmail",
         ...this.getColumnSearchProps("Email"),
-      },
+      },    
       {
         title: "Mobile Number",
         dataIndex: "employeeMobileNumber",
         key: "employeeMobileNumber",
         ...this.getColumnSearchProps("Mobile Number"),
-      }, 
+      },
       {
         title: "Department",
         dataIndex: "employeeDepartment",
         key: "employeeDepartment",
-        ...this.getColumnSearchProps("Department"),
-      },     
+        filters: [
+          {
+            text: "Developer",
+            value: "Developer",
+          },
+          {
+            text: "QA",
+            value: "QA",
+          },          
+        ],
+        filterMultiple: false,
+        filteredValue: filteredInfo.employeeDepartment || null,
+        onFilter: (value, record) => record.employeeDepartment.includes(value),
+      },
+      {
+        title: "Position",
+        dataIndex: "employeePosition",
+        key: "employeePosition",
+        filters: [
+          {
+            text: "Associate",
+            value: "Associate",
+          },
+          {
+            text: "Lead",
+            value: "Lead",
+          },          
+        ],
+        filterMultiple: false,
+        filteredValue: filteredInfo.employeePosition || null,
+        onFilter: (value, record) => record.employeePosition.includes(value),
+      }, 
+      {
+        title: "Edit",        
+        key: "edit",
+        render: (record) => (
+          <a onClick={() => this.props.viewUpdateDrawerForm(record)}>
+            <EditOutlined />
+          </a>
+        ),
+      },
+      {
+        title: "View",
+        key: "view",
+        render: (viewRecord = this.state.selectedRows) => (
+          <a onClick={() => this.employeeView(viewRecord)}>
+            <FolderViewOutlined style={{ color: "red" }} />
+          </a>
+        ),
+      },  
     ];
     
     return (
       <Fragment>
         <div>    
-    
-          <Table columns={columns} dataSource={this.props.employees} />
+        <Spin tip="Loading..." spinning={this.state.loading}>
+          <Table columns={columns} dataSource={this.props.employees} onChange={this.filterHandleChange}/>          
+        </Spin>
         </div>        
       </Fragment>
     );
+    }
+}
+const mapStateToProps = state => ({
+  employees: state.ReducerEmployee.employees, 
+
+});
+const mapDispatchToProps = (dispatch, ownProps) => {
+  return {    
+      fetchemployee: () => { dispatch(fetchemployee()) },  
+      viewUpdateDrawerForm:(record)=>{dispatch(viewUpdateDrawerForm(record))},          
   }
 }
 
-export default ViewEmployee;
+export default connect(mapStateToProps,mapDispatchToProps)(ViewEmployee);
