@@ -71,21 +71,24 @@ export class Layouts extends Component {
             </div>
           </Header>
           <Content style={{ padding: "0 50px" }}>
-            <Link to="/">
-              <Breadcrumb style={{ margin: "16px 0" }}>
+            <br></br>
+            
+              {/* <Breadcrumb style={{ margin: "16px 0" }}>
                 
                 &nbsp;&nbsp;&nbsp;
+                <Link to="/">
                 <Breadcrumb.Item>Invicta Defect Tracker System</Breadcrumb.Item>
-              </Breadcrumb>
-            </Link>
+                </Link>
+              </Breadcrumb> */}
+          
             <div className="site-layout-content">
               <Switch>
                 <Body />
               </Switch>
             </div>
           </Content>
-          <Footer style={{ textAlign: "center" }}>
-            Invicta Defect Tracker System ©2018
+          <Footer style={{ textAlign: "center"}}>
+            Invicta Defect Tracker System ©2020
           </Footer>
         </Layout>
       </div>

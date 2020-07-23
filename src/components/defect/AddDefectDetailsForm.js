@@ -18,22 +18,6 @@ export class AddDefectDetailsForm extends Component {
             })
         }
     }
-    // componentDidUpdate(prevProps){
-    //     this.setState({
-    //         show:prevProps.show
-    //     })
-    // }
-
-    // static getDerivedStateFromProps(props, state) {
-    //     alert("derived");
-    //     if (props.show !== state.show) {
-    //       return {
-    //         show:props.show
-    //       };
-    //     }
-    //     return null;
-    //   }
-
     state = {
         show: false,
         defects: {},

@@ -1,134 +1,284 @@
 import React, { Component } from 'react'
-import { Button, Col, Row, Statistic } from "antd";
+import { Button, Col, Row, Badge,Avatar,Typography} from "antd";
 import { connect } from 'react-redux';
-import { viewDefectAddDrawerForm } from '../redux/action/ActionDefect';
+import { viewDefectAddDrawerForm, fetchdefect } from '../redux/action/ActionDefect';
 import ViewDefect from './ViewDefectDetails'
 import AddDefect from './AddDefectDetailsForm'
 import UpdateDefect from './UpdateDefectDetailsForm'
-import {
-  FallOutlined,
-  RiseOutlined,
-  StockOutlined,
-  BugOutlined,
-  RadarChartOutlined,
-} from "@ant-design/icons";
-
+const { Text } = Typography;
 export class defect extends Component {
   state = {
-    totalDefects: '',
-    high: '',
-    medium: '',
-    low: '',
-    newdef: ''
-
-
+    
   };
-  componentDidMount() {
-    for (let i = 0; i < this.props.defect.length; i++) {
-      switch (this.props.defect[i].severity) {
-        case "High":
-          this.setState({
-            high: this.state.high + 1,
-          });
-          break;
-        case "Medium":
-          this.setState({
-            medium: this.state.medium + 1,
-          });
-          break;
-        case "Low":
-          this.setState({
-            low: this.state.low + 1,
-          });
-          break;
-      }
-      switch (this.props.defect[i].status) {
-        case "New":
-          this.setState({
-            newdef: this.state.newdef + 1,
-          });
-          break;
-      }
-    }
-  }
   render() {
     return (
       <div>
         <Row gutter={8}>
-          <Col span={3}>
+          <Col span={6}>
             <Button
               type="primary"
-              ghost
               style={{
                 marginBottom: 16,
                 marginTop: 10,
+                width: 100,
+                marginLeft: 40,
               }}
               onClick={this.props.viewDefectAddDrawerForm}
             >
-              Add New Defect
+              Add Defect
             </Button>
-          </Col>
-          <Col span={6}>
+            &nbsp; &nbsp; &nbsp;
             <Button
+              type="primary"
               danger
               onClick={this.clearFilters}
               style={{
                 marginBottom: 16,
                 marginTop: 10,
+                width: 100,
               }}
             >
-              Clear filters
+              Reset Table
             </Button>
           </Col>
-          <Col span={3}>
-            <Statistic
-              title="High Severity"
-              style={{ textAlign: "center" }}
-              value={this.state.high}
-              valueStyle={{ color: "red", textAlign: "center" }}
-              prefix={<RiseOutlined />}
-            ></Statistic>
-          </Col>
-          <Col span={3}>
-            <Statistic
-              title="Medium Severity"
-              style={{ textAlign: "center" }}
-              value={this.state.medium}
-              valueStyle={{ color: "orange", textAlign: "center" }}
-              prefix={<StockOutlined />}
-            ></Statistic>
-          </Col>
-          <Col span={3}>
-            <Statistic
-              title="Low Severity"
-              style={{ textAlign: "center" }}
-              value={this.state.low}
-              valueStyle={{ color: "green", textAlign: "center" }}
-              prefix={<FallOutlined />}
-            ></Statistic>
-          </Col>
-          <Col span={3}>
-            <Statistic
-              title="New Defects"
-              style={{ textAlign: "center" }}
-              value={this.state.newdef}
-              valueStyle={{ color: "blue", textAlign: "center" }}
-              prefix={<RadarChartOutlined />}
-            ></Statistic>
-          </Col>
-          <Col span={3}>
-            <Statistic
-              title="Total Defects"
-              style={{ textAlign: "center" }}
-              value={this.props.defect.length}
-              valueStyle={{ color: "magenta", textAlign: "center" }}
-              prefix={<BugOutlined />}
-            ></Statistic>
+        </Row>
+        <Row gutter={8}>
+          <Col span={24}>
+            <div className="serverity-box">
+              <Row gutter={16}>
+                <Col span={6}>
+                  <div className="sev-box">
+                    <div className="sev-name">
+                      <Text
+                        style={{
+                          fontWeight: "500",
+                          color: "black",
+                          fontStyle: "italic",
+                          fontSize: 15,
+                        }}
+                        type="secondary"
+                      >
+                        RE-OPEN DEFECTS : {this.state.ropendef}
+                      </Text>
+                      <br />
+                    </div>
+                    <div className="total-sev">
+                      <span className="avatar-item">
+                        <Badge
+                          count={this.state.ropenHigh}
+                          style={{
+                            backgroundColor: "red",
+                          }}
+                        >
+                          <Avatar
+                            style={{ color: "red", fontWeight: "bolder" }}
+                            shape="circle"
+                            icon="H"
+
+                          />
+                        </Badge>
+                      </span>
+                      <span className="avatar-item">
+                        <Badge
+                          count={this.state.ropenMedium}
+                          style={{ backgroundColor: "#faad14" }}
+                        >
+                          <Avatar
+                            style={{ color: "#faad14", fontWeight: "bolder" }}
+                            shape="circle"
+                            icon="M"
+                          />
+                        </Badge>
+                      </span>
+                      <span className="avatar-item">
+                        <Badge
+                          count={this.state.ropenLow}
+                          style={{ backgroundColor: "#237804" }}
+                        >
+                          <Avatar
+                            style={{ color: "green", fontWeight: "bolder" }}
+                            shape="circle"
+                            icon="L"
+                          />
+                        </Badge>
+                      </span>
+                    </div>
+                  </div>
+                </Col>
+                <Col span={6}>
+                  <div className="sev-box">
+                    <div className="sev-name">
+                      <Text
+                        style={{
+                          fontWeight: "500",
+                          color: "black",
+                          fontStyle: "italic",
+                          fontSize: 15,
+                        }}
+                        type="secondary"
+                      >
+                        OPEN DEFECTS : {this.state.opendef}
+                      </Text>
+                      <br />
+                    </div>
+                    <div className="total-sev">
+                      <span className="avatar-item">
+                        <Badge
+                          count={this.state.openHigh}
+                          style={{ backgroundColor: "red" }}
+                        >
+                          <Avatar
+                            style={{ color: "red", fontWeight: "bolder" }}
+                            shape="circle"
+                            icon="H"
+                          />
+                        </Badge>
+                      </span>
+                      <span className="avatar-item">
+                        <Badge
+                          count={this.state.openMedium}
+                          style={{ backgroundColor: "#faad14" }}
+                        >
+                          <Avatar
+                            style={{ color: "#faad14", fontWeight: "bolder" }}
+                            shape="circle"
+                            icon="M"
+                          />
+                        </Badge>
+                      </span>
+                      <span className="avatar-item">
+                        <Badge
+                          count={this.state.openLow}
+                          style={{ backgroundColor: "#237804" }}
+                        >
+                          <Avatar
+                            style={{ color: "green", fontWeight: "bolder" }}
+                            shape="circle"
+                            icon="L"
+                          />
+                        </Badge>
+                      </span>
+                    </div>
+                  </div>
+                </Col>
+                <Col span={6}>
+                  <div className="sev-box">
+                    <div className="sev-name">
+                      <Text
+                        style={{
+                          fontWeight: "500",
+                          color: "black",
+                          fontStyle: "italic",
+                          fontSize: 15,
+                        }}
+                        type="secondary"
+                      >
+                        NEW DEFECTS : {this.state.newdef}
+                      </Text>
+                      <br />
+                    </div>
+                    <div className="total-sev">
+                      <span className="avatar-item">
+                        <Badge
+                          count={this.state.newHigh}
+                          style={{ backgroundColor: "red" }}
+                        >
+                          <Avatar
+                            style={{ color: "red", fontWeight: "bolder" }}
+                            shape="circle"
+                            icon="H"
+                          />
+                        </Badge>
+                      </span>
+                      <span className="avatar-item">
+                        <Badge
+                          count={this.state.newMedium}
+                          style={{ backgroundColor: "#faad14" }}
+                        >
+                          <Avatar
+                            style={{ color: "#faad14", fontWeight: "bolder" }}
+                            shape="circle"
+                            icon="M"
+                          />
+                        </Badge>
+                      </span>
+                      <span className="avatar-item">
+                        <Badge
+                          count={this.state.newLow}
+                          style={{ backgroundColor: "#237804" }}
+                        >
+                          <Avatar
+                            style={{ color: "green", fontWeight: "bolder",}}
+                            shape="circle"
+                            icon="L"
+                          />
+                        </Badge>
+                      </span>
+                    </div>
+                  </div>
+                </Col>
+                <Col span={6}>
+                  <div className="sev-box">
+                    <div className="sev-name">
+                      <Text
+                        style={{
+                          fontWeight: "500",
+                          color: "black",
+                          fontStyle: "italic",
+                          fontSize: 15,
+                        }}
+                        type="secondary"
+                      >
+                        TOTAL DEFECTS : {this.state.data}
+                      </Text>
+                    </div>
+                    <div className="total-sev">
+                      <span className="avatar-item">
+                        <Badge
+                          count={this.state.high}
+                          style={{ backgroundColor: "red" }}
+                        >
+                          <Avatar
+                            style={{ color: "red", fontWeight: "bolder" }}
+                            shape="circle"
+                            icon="H"
+                          />
+                        </Badge>
+                      </span>
+                      <span className="avatar-item">
+                        <Badge
+                          count={this.state.medium}
+                          style={{ backgroundColor: "#faad14" }}
+                        >
+                          <Avatar
+                            style={{ color: "#faad14", fontWeight: "bolder" }}
+                            shape="circle"
+                            icon="M"
+                          />
+                        </Badge>
+                      </span>
+                      <span className="avatar-item">
+                        <Badge
+                          count={this.state.low}
+                          style={{ backgroundColor: "#237804" }}
+                        >
+                          <Avatar
+                            style={{ color: "green", fontWeight: "bolder" }}
+                            shape="circle"
+                            icon="L"
+                          />
+                        </Badge>
+                      </span>
+                    </div>
+                  </div>
+                </Col>
+              </Row>
+            </div>
           </Col>
         </Row>
         <ViewDefect />
         <AddDefect />
-        <UpdateDefect/>
+        <UpdateDefect />
       </div>
     )
   }
@@ -139,7 +289,8 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
-    viewDefectAddDrawerForm: () => { dispatch(viewDefectAddDrawerForm()) }
+    viewDefectAddDrawerForm: () => { dispatch(viewDefectAddDrawerForm()) },
+    fetchdefect: () => { dispatch(fetchdefect()) }
   }
 }
 

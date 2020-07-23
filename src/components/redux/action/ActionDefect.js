@@ -1,4 +1,4 @@
-import { ADD_DEFECT, FETCH_DEFECT,UPDATE_DEFECT, VIEW_DEFECT_ADD_DRAWER_FORM, CLOSE_DEFECT_ADD_DRAWER_FORM, VIEW_DEFECT_UPDATE_DRAWER_FORM, CLOSE_DEFECT_UPDATE_DRAWER_FORM } from './../type/TypesDefect'
+import { ADD_DEFECT, FETCH_DEFECT,UPDATE_DEFECT, VIEW_DEFECT_ADD_DRAWER_FORM, CLOSE_DEFECT_ADD_DRAWER_FORM, VIEW_DEFECT_UPDATE_DRAWER_FORM, CLOSE_DEFECT_UPDATE_DRAWER_FORM} from './../type/TypesDefect'
 import axios from 'axios';
 
 export const fetchdefect = () => dispatch => {
@@ -76,3 +76,4 @@ export const closeDefectUpdateDrawerForm = () => dispatch => {
     payload: { defectUpdateFormShowValue: false }
   })
 }
+

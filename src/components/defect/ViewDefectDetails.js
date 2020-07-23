@@ -163,8 +163,7 @@ export class ViewDefectDetails extends Component {
             text: "UI",
             value: "UI",
           },
-        ],
-        filterMultiple: false,
+        ],        
         filteredValue: filteredInfo.type || null,
         onFilter: (value, record) => record.type.includes(value),
       },
@@ -204,8 +203,7 @@ export class ViewDefectDetails extends Component {
             text: "Postpone",
             value: "Postpone",
           },
-        ],
-        filterMultiple: false,
+        ],        
         filteredValue: filteredInfo.status || null,
         onFilter: (value, record) => record.status.includes(value),
         render: (value, record) => {
@@ -244,14 +242,13 @@ export class ViewDefectDetails extends Component {
             text: "Low",
             value: "Low",
           },
-        ],
-        filterMultiple: false,
+        ],        
         filteredValue: filteredInfo.severity || null,
         onFilter: (value, record) => record.severity.includes(value),
         render: (value, record) => {
           switch (record.severity) {
             case "High":
-              return <Tag color="red">High</Tag>;
+              return <Tag color="red" style={{color:'blue'}}>High</Tag>;
             case "Medium":
               return <Tag color="orange">Medium</Tag>;
             case "Low":
@@ -276,8 +273,7 @@ export class ViewDefectDetails extends Component {
             text: "Low",
             value: "Low",
           },
-        ],
-        filterMultiple: false,
+        ],        
         filteredValue: filteredInfo.priority || null,
         onFilter: (value, record) => record.priority.includes(value),
         render: (value, record) => {
